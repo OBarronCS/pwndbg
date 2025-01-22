@@ -40,6 +40,10 @@ from capstone.sparc import SPARC_INS_JMP
 from capstone.sparc import SPARC_INS_JMPL
 from capstone.x86 import X86_INS_JMP
 from capstone.x86 import X86Op
+from typing_extensions import override
+
+import pwndbg.dbg
+from pwndbg.dbg import DisassembledInstruction
 
 # Architecture specific instructions that mutate the instruction pointer unconditionally
 # The Capstone RET and CALL groups are also used to filter CALL and RET types when we check for unconditional jumps,
@@ -119,17 +123,12 @@ CAPSTONE_ARCH_MAPPING_STRING = {
 # in the disasm view output (see 'pwndbg.color.disasm.instruction()'), as well as for
 # Pwndbg commands like "nextcall" that need to know the instructions target to set breakpoints
 class PwndbgInstruction:
-    def __init__(self, cs_insn: CsInsn | None) -> None:
+    def __init__(self, cs_insn: CsInsn) -> None:
         self.cs_insn: CsInsn = cs_insn
         """
         The underlying Capstone instruction, if present.
         Ideally, only the enhancement code will access the 'cs_insn' property
         """
-
-        # None if Capstone don't support the arch being disassembled
-        # See "make_simple_instruction" function
-        if cs_insn is None:
-            return
 
         self.address: int = cs_insn.address
 
@@ -555,29 +554,81 @@ class EnhancedOperand:
         return f"[{info}]"
 
 
-def make_simple_instruction(address: int) -> PwndbgInstruction:
-    """
-    Instantiate a PwndbgInstruction for an architecture that Capstone/pwndbg doesn't support (as defined in the CapstoneArch structure)
-    """
-    ins = pwndbg.dbg.selected_inferior().disasm(address)
-    asm = ins["asm"].split(maxsplit=1)
+# Represents a disassembled instruction when Capstone does not support the given architecture
+class ManualPwndbgInstruction(PwndbgInstruction):
+    def __init__(self, address: int) -> None:
+        ins: DisassembledInstruction = pwndbg.dbg.selected_inferior().disasm(address)
+        asm = ins["asm"].split(maxsplit=1)
 
-    pwn_ins = PwndbgInstruction(None)
-    pwn_ins.address = address
-    pwn_ins.size = ins["length"]
+        # ERROR: some of the functions depends on this attribute existing
+        # Give this object all the attributes it should have (defined in constructor)
+        self.address = address
+        self.size = ins["length"]
 
-    pwn_ins.mnemonic = asm[0].strip()
-    pwn_ins.op_str = asm[1].strip() if len(asm) > 1 else ""
+        self.mnemonic = asm[0].strip()
+        self.op_str = asm[1].strip() if len(asm) > 1 else ""
+        self.groups = set()
 
-    pwn_ins.next = address + pwn_ins.size
-    pwn_ins.target = pwn_ins.next
+        # Set Capstone ID to -1
+        self.id = -1
 
-    pwn_ins.groups = []
+        self.operands = []
 
-    pwn_ins.condition = InstructionCondition.UNDETERMINED
+        self.asm_string = "%-06s %s" % (self.mnemonic, self.op_str)
 
-    pwn_ins.annotation = None
+        self.next = address + self.size
+        self.target = self.next
+        self.target_const = None
 
-    pwn_ins.operands = []
+        self.condition = InstructionCondition.UNDETERMINED
 
-    return pwn_ins
+        self.declare_conditional = None
+        self.declare_is_unconditional_jump = False
+        self.force_unconditional_jump_target = False
+
+        self.annotation = None
+
+        self.annotation_padding = None
+
+        self.syscall = None
+        self.causes_branch_delay = False
+
+        self.split = SplitType.NO_SPLIT
+
+        self.emulated = False
+
+    @property
+    def bytes(self) -> bytearray:
+        return bytearray()
+
+    @property
+    def call_like(self) -> bool:
+        return False
+
+    @property
+    def jump_like(self) -> bool:
+        return False
+
+    @property
+    def has_jump_target(self) -> bool:
+        return False
+
+    @property
+    def is_conditional_jump(self) -> bool:
+        return False
+
+    @property
+    def is_unconditional_jump(self) -> bool:
+        return False
+
+    @property
+    def is_conditional_jump_taken(self) -> bool:
+        return False
+
+    @override
+    def op_find(self, op_type: int, position: int) -> EnhancedOperand:
+        return None
+
+    @override
+    def op_count(self, op_type: int) -> int:
+        return 0

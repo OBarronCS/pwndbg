@@ -678,6 +678,8 @@ class GDBProcess(pwndbg.dbg_mod.Process):
             arch = gdb.execute("show architecture", to_string=True).strip()
             not_exactly_arch = True
 
+        arch = arch.lower()
+
         # Below, we fix the fetched architecture
         for match in pwndbg.aglib.arch_mod.ARCHS:
             if match in arch:
