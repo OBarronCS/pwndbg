@@ -126,7 +126,7 @@ class PwndbgInstruction:
     def __init__(self, cs_insn: CsInsn) -> None:
         self.cs_insn: CsInsn = cs_insn
         """
-        The underlying Capstone instruction, if present.
+        The underlying Capstone instruction object.
         Ideally, only the enhancement code will access the 'cs_insn' property
         """
 
