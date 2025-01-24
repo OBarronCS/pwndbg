@@ -5,6 +5,7 @@ from collections import defaultdict
 from enum import Enum
 from typing import Dict
 from typing import List
+from typing import Protocol
 from typing import Set
 
 # Reverse lookup tables for debug printing
@@ -119,15 +120,69 @@ CAPSTONE_ARCH_MAPPING_STRING = {
 }
 
 
+# Interface for enhanced instructions - there are two implementations defined in this file
+class PwndbgInstruction(Protocol):
+    cs_insn: CsInsn
+    address: int
+    size: int
+    mnemonic: str
+    op_str: str
+    groups: Set[int]
+    id: int
+    operands: List[EnhancedOperand]
+    asm_string: str
+    next: int
+    target: int
+    target_string: str | None
+    target_const: bool | None
+    condition: InstructionCondition
+    declare_conditional: bool | None
+    declare_is_unconditional_jump: bool
+    force_unconditional_jump_target: bool
+    annotation: str | None
+    annotation_padding: int | None
+    syscall: int | None
+    syscall_name: str | None
+    causes_branch_delay: bool
+    split: SplitType
+    emulated: bool
+
+    @property
+    def call_like(self) -> bool: ...
+
+    @property
+    def jump_like(self) -> bool: ...
+
+    @property
+    def has_jump_target(self) -> bool: ...
+
+    @property
+    def is_conditional_jump(self) -> bool: ...
+
+    @property
+    def is_unconditional_jump(self) -> bool: ...
+
+    @property
+    def is_conditional_jump_taken(self) -> bool: ...
+
+    @property
+    def bytes(self) -> bytearray: ...
+
+    def op_find(self, op_type: int, position: int) -> EnhancedOperand: ...
+
+    def op_count(self, op_type: int) -> int: ...
+
+
 # This class is used to provide context to an instructions execution, used both
 # in the disasm view output (see 'pwndbg.color.disasm.instruction()'), as well as for
 # Pwndbg commands like "nextcall" that need to know the instructions target to set breakpoints
-class PwndbgInstruction:
+# The information in this class is backed by metadata from Capstone
+class PwndbgInstructionImpl(PwndbgInstruction):
     def __init__(self, cs_insn: CsInsn) -> None:
         self.cs_insn: CsInsn = cs_insn
         """
         The underlying Capstone instruction object.
-        Ideally, only the enhancement code will access the 'cs_insn' property
+        Only the enhancement code should access the 'cs_insn' property
         """
 
         self.address: int = cs_insn.address
@@ -172,7 +227,7 @@ class PwndbgInstruction:
         # in pwndbg.aglib.disasm.arch.py
         # ***********
 
-        self.asm_string: str = "%-06s %s" % (self.mnemonic, self.op_str)
+        self.asm_string: str = f"{self.mnemonic:<6} {self.op_str}"
         """
         The full string representing the instruction - `mov    rdi, rsp` with appropriate padding.
 
@@ -554,14 +609,25 @@ class EnhancedOperand:
         return f"[{info}]"
 
 
-# Represents a disassembled instruction when Capstone does not support the given architecture
+# Represents a disassembled instruction
+# Conforms to the PwndbgInstruction interface
 class ManualPwndbgInstruction(PwndbgInstruction):
     def __init__(self, address: int) -> None:
+        """
+        This class provides an implementation of PwndbgInstruction for cases where the architecture
+        at hand is not supported by the Capstone disassembler. The backing information is sourced from
+        GDB/LLDB's built-in disassemblers.
+
+        Instances of this class do not go through the 'enhancement' process due to lacking important information provided by Capstone.
+        As a result of this, some of the methods raise NotImplementedError, because if they are called it indicates a bug elsewhere in the codebase.
+        """
         ins: DisassembledInstruction = pwndbg.dbg.selected_inferior().disasm(address)
         asm = ins["asm"].split(maxsplit=1)
 
-        # ERROR: some of the functions depends on this attribute existing
-        # Give this object all the attributes it should have (defined in constructor)
+        # The enhancement code assumes this value exists.
+        # However, a ManualPwndbgInstruction should never be used in the enhancement code.
+        self.cs_insn: CsInsn = None
+
         self.address = address
         self.size = ins["length"]
 
@@ -574,10 +640,11 @@ class ManualPwndbgInstruction(PwndbgInstruction):
 
         self.operands = []
 
-        self.asm_string = "%-06s %s" % (self.mnemonic, self.op_str)
+        self.asm_string = f"{self.mnemonic:<6} {self.op_str}"
 
         self.next = address + self.size
         self.target = self.next
+        self.target_string = None
         self.target_const = None
 
         self.condition = InstructionCondition.UNDETERMINED
@@ -591,6 +658,8 @@ class ManualPwndbgInstruction(PwndbgInstruction):
         self.annotation_padding = None
 
         self.syscall = None
+        self.syscall_name = None
+
         self.causes_branch_delay = False
 
         self.split = SplitType.NO_SPLIT
@@ -599,6 +668,9 @@ class ManualPwndbgInstruction(PwndbgInstruction):
 
     @property
     def bytes(self) -> bytearray:
+        # GDB simply doesn't provide us with the raw bytes.
+        # However, it is important that this returns a valid bytearray,
+        # since the disasm code indexes this for nearpc-num-opcode-bytes.
         return bytearray()
 
     @property
@@ -627,8 +699,10 @@ class ManualPwndbgInstruction(PwndbgInstruction):
 
     @override
     def op_find(self, op_type: int, position: int) -> EnhancedOperand:
-        return None
+        # raise NotImplementedError, because if this is called it indicates a bug elsewhere in the codebase.
+        # ManualPwndbgInstruction should not go through the enhancement process, where this would be called.
+        raise NotImplementedError
 
     @override
     def op_count(self, op_type: int) -> int:
-        return 0
+        raise NotImplementedError
