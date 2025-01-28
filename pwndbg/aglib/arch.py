@@ -5,40 +5,8 @@ from typing import Literal
 import pwnlib
 
 import pwndbg
+from pwndbg.lib.arch import PWNLIB_ARCH_MAPPINGS
 from pwndbg.lib.arch import Arch
-
-# List of architectures - used when determining GDB arch, and in OnlyWithArch
-ARCHS = (
-    "x86-64",
-    "i386",
-    "aarch64",
-    "mips",
-    "powerpc",
-    "sparc",
-    "arm",
-    "armcm",
-    "riscv:rv32",
-    "riscv:rv64",
-    "riscv",
-    "loongarch64",
-)
-
-
-# mapping between pwndbg and pwntools arch names
-pwnlib_archs_mapping = {
-    "x86-64": "amd64",
-    "i386": "i386",
-    "aarch64": "aarch64",
-    "mips": "mips",
-    "powerpc": "powerpc",
-    "sparc": "sparc",
-    "arm": "arm",
-    "iwmmxt": "arm",
-    "armcm": "thumb",
-    "rv32": "riscv32",
-    "rv64": "riscv64",
-    "loongarch64": "none",
-}
 
 
 def read_thumb_bit() -> int | None:
@@ -71,7 +39,7 @@ arch: Arch = Arch("i386", 4, "little")
 def update() -> None:
     a = pwndbg.dbg.selected_inferior().arch()
 
-    pwnlib.context.context.arch = pwnlib_archs_mapping[a.name]
+    pwnlib.context.context.arch = PWNLIB_ARCH_MAPPINGS[a.name]
     pwnlib.context.context.bits = a.ptrsize * 8
 
     arch.update(a.name, a.ptrsize, a.endian)

@@ -2,7 +2,48 @@ from __future__ import annotations
 
 import struct
 import sys
+import typing
 from typing import Literal
+
+# Names of arches that Pwndbg supports
+# The names that GDB/LLDB recognize are converted to a name in this list
+PWNDBG_SUPPORTED_ARCHITECTURES_TYPE = Literal[
+    "x86-64",
+    "i386",
+    "i8086",
+    "mips",
+    "aarch64",
+    "arm",
+    "armcm",
+    "iwmmxt",
+    "rv32",
+    "rv64",
+    "sparc",
+    "powerpc",
+    "loongarch64",
+]
+
+PWNDBG_SUPPORTED_ARCHITECTURES: list[PWNDBG_SUPPORTED_ARCHITECTURES_TYPE] = list(
+    typing.get_args(PWNDBG_SUPPORTED_ARCHITECTURES_TYPE)
+)
+
+# mapping between pwndbg and pwntools arch names
+PWNLIB_ARCH_MAPPINGS = {
+    "x86-64": "amd64",
+    "i386": "i386",
+    "i8086": "none",
+    "mips": "mips",
+    "aarch64": "aarch64",
+    "arm": "arm",
+    "iwmmxt": "arm",
+    "armcm": "thumb",
+    "rv32": "riscv32",
+    "rv64": "riscv64",
+    "powerpc": "powerpc",
+    "sparc": "sparc",
+    "loongarch64": "none",
+}
+
 
 FMT_LITTLE_ENDIAN = {1: "B", 2: "<H", 4: "<I", 8: "<Q"}
 FMT_BIG_ENDIAN = {1: "B", 2: ">H", 4: ">I", 8: ">Q"}

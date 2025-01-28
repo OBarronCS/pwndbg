@@ -35,6 +35,25 @@ from pwndbg.lib.memory import PAGE_SIZE
 T = TypeVar("T")
 
 
+# List of supported architectures that GDB recognizes
+# These strings to converted to the Pwndbg-specific name for the architecture
+gdb_architecture_name_fixup_list = (
+    "x86-64",
+    "i386",
+    "i8086",
+    "aarch64",
+    "mips",
+    "powerpc",
+    "sparc",
+    "arm",
+    "armcm",
+    "riscv:rv32",
+    "riscv:rv64",
+    "riscv",
+    "loongarch64",
+)
+
+
 class GDBArch(pwndbg.dbg_mod.Arch):
     _endian: Literal["little", "big"]
     _name: str
@@ -681,7 +700,7 @@ class GDBProcess(pwndbg.dbg_mod.Process):
         arch = arch.lower()
 
         # Below, we fix the fetched architecture
-        for match in pwndbg.aglib.arch_mod.ARCHS:
+        for match in gdb_architecture_name_fixup_list:
             if match in arch:
                 # Distinguish between Cortex-M and other ARM
                 # When GDB detects correctly Cortex-M processes, it will label them with `arm*-m`, such as armv7e-m
