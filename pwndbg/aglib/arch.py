@@ -39,7 +39,7 @@ arch: Arch = Arch("i386", 4, "little")
 def update() -> None:
     a = pwndbg.dbg.selected_inferior().arch()
 
-    pwnlib.context.context.arch = PWNLIB_ARCH_MAPPINGS[a.name]
+    pwnlib.context.context.arch = PWNLIB_ARCH_MAPPINGS.get(a.name, "none")
     pwnlib.context.context.bits = a.ptrsize * 8
 
     arch.update(a.name, a.ptrsize, a.endian)
