@@ -15,7 +15,6 @@ PWNDBG_SUPPORTED_ARCHITECTURES_TYPE = Literal[
     "aarch64",
     "arm",
     "armcm",
-    "iwmmxt",
     "rv32",
     "rv64",
     "sparc",
