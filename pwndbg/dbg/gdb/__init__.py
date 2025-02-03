@@ -46,14 +46,11 @@ gdb_architecture_name_fixup_list = (
     "powerpc",
     "sparc",
     "arm",
-    "armcm",
     "riscv:rv32",
     "riscv:rv64",
     "riscv",
     "loongarch64",
 )
-
-
 class GDBArch(pwndbg.dbg_mod.Arch):
     _endian: Literal["little", "big"]
     _name: str
