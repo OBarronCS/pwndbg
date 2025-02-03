@@ -35,7 +35,6 @@ PWNLIB_ARCH_MAPPINGS = {
     "mips": "mips",
     "aarch64": "aarch64",
     "arm": "arm",
-    "iwmmxt": "arm",
     "armcm": "thumb",
     "rv32": "riscv32",
     "rv64": "riscv64",
