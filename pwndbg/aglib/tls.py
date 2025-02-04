@@ -37,7 +37,7 @@ def find_address_with_pthread_self() -> int:
     the pthread_self() function. The returned address points to the `struct tcbhead_t`,
     which serves as the header for TLS and thread-specific metadata.
     """
-    if pwndbg.aglib.arch.current not in ("x86-64", "i386", "arm", "aarch64"):
+    if pwndbg.aglib.arch.name not in ("x86-64", "i386", "arm", "aarch64"):
         return 0
 
     result = __call_pthread_self()
@@ -53,7 +53,7 @@ def find_address_with_pthread_self() -> int:
     # For i386 and x86-64, the return value of the pthread_self() is the address of TLS, because the value is self reference of the TLS: https://elixir.bootlin.com/glibc/glibc-2.37/source/nptl/pthread_create.c#L671
     # But for arm, the implementation of THREAD_SELF is different, we need to add sizeof(struct pthread) to the result to get the address of TLS.
 
-    if pwndbg.aglib.arch.current in ("arm", "aarch64"):
+    if pwndbg.aglib.arch.name in ("arm", "aarch64"):
         pthread_type = pwndbg.aglib.typeinfo.load("struct pthread")
         if pthread_type is None:
             # Type 'pthread' not found
@@ -69,14 +69,14 @@ def find_address_with_register() -> int:
     a CPU register. The returned address points to the `struct tcbhead_t`, which is the
     entry point for TLS and thread-specific metadata.
     """
-    if pwndbg.aglib.arch.current == "x86-64":
+    if pwndbg.aglib.arch.name == "x86-64":
         return int(pwndbg.aglib.regs.fsbase)
-    elif pwndbg.aglib.arch.current == "i386":
+    elif pwndbg.aglib.arch.name == "i386":
         return int(pwndbg.aglib.regs.gsbase)
-    elif pwndbg.aglib.arch.current == "aarch64":
+    elif pwndbg.aglib.arch.name == "aarch64":
         # FIXME: cleanup/remove `TPIDR_EL0` register, it was renamed to `tpidr` since GDB13+
         return int(pwndbg.aglib.regs.tpidr or pwndbg.aglib.regs.TPIDR_EL0 or 0)
-    elif pwndbg.aglib.arch.current == "arm":
+    elif pwndbg.aglib.arch.name == "arm":
         # TODO: linux ptrace for 64bit kernel?
         # In FreeBSD tls is under `tpidruro` register.
         # In Linux, the `tpidruro` register isn't available via ptrace in the 32-bit

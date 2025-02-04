@@ -64,10 +64,6 @@ class Arch:
         endian: Literal["little", "big"],
     ) -> None:
         self.name = arch_name
-        # TODO: `current` is the old name for the arch name, and it's now an
-        # alias for `name`. It's used throughout the codebase, do we want to
-        # migrate these uses to `name`?
-        self.current = self.name
         self.ptrsize = ptrsize
         self.ptrmask = (1 << 8 * ptrsize) - 1
         self.endian = endian

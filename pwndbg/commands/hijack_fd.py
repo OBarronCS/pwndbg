@@ -31,7 +31,7 @@ class ShellcodeRegs(NamedTuple):
 
 
 def get_shellcode_regs() -> ShellcodeRegs:
-    register_set = pwndbg.lib.regs.reg_sets[pwndbg.aglib.arch.current]
+    register_set = pwndbg.lib.regs.reg_sets[pwndbg.aglib.arch.name]
     syscall_abi = pwndbg.lib.abi.ABI.syscall()
 
     # pickup free register what is not used for syscall abi
@@ -44,7 +44,7 @@ def get_shellcode_regs() -> ShellcodeRegs:
     )
     assert (
         newfd_reg is not None
-    ), f"architecture {pwndbg.aglib.arch.current} don't have unused register..."
+    ), f"architecture {pwndbg.aglib.arch.name} don't have unused register..."
 
     return ShellcodeRegs(newfd_reg, register_set.retval, register_set.stack)
 

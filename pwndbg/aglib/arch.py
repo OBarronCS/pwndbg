@@ -15,11 +15,11 @@ def read_thumb_bit() -> int | None:
 
     Return None if the Thumb bit is not relevent to the current architecture
     """
-    if pwndbg.aglib.arch.current == "arm":
+    if pwndbg.aglib.arch.name == "arm":
         # When program initially starts, cpsr may not be readable
         if (cpsr := pwndbg.aglib.regs.cpsr) is not None:
             return (cpsr >> 5) & 1
-    elif pwndbg.aglib.arch.current == "armcm":
+    elif pwndbg.aglib.arch.name == "armcm":
         # ARM Cortex-M procesors only suport Thumb mode. However, there is still a bit
         # that represents the Thumb mode (which is currently architecturally defined to be 1)
         if (xpsr := pwndbg.aglib.regs.xpsr) is not None:

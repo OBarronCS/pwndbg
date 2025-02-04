@@ -210,7 +210,7 @@ class InstructionExecutedResult(NamedTuple):
 # with a copy of the current processor state.
 class Emulator:
     def __init__(self) -> None:
-        self.arch = pwndbg.aglib.arch.current
+        self.arch = pwndbg.aglib.arch.name
 
         if self.arch not in arch_to_UC:
             raise NotImplementedError(f"Cannot emulate code for {self.arch}")
@@ -582,7 +582,7 @@ class Emulator:
         """
         Retrieve the mode used by Unicorn for the current architecture.
         """
-        arch = pwndbg.aglib.arch.current
+        arch = pwndbg.aglib.arch.name
         mode = 0
 
         if arch == "armcm":

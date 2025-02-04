@@ -172,7 +172,7 @@ class DisassemblyAssistant:
 
     @staticmethod
     def for_current_arch() -> DisassemblyAssistant:
-        return DisassemblyAssistant.assistants.get(pwndbg.aglib.arch.current, None)
+        return DisassemblyAssistant.assistants.get(pwndbg.aglib.arch.name, None)
 
     # Mutates the "instruction" object
     @staticmethod
@@ -218,7 +218,7 @@ class DisassemblyAssistant:
                 emu = jump_emu = None
 
         enhancer: DisassemblyAssistant = DisassemblyAssistant.assistants.get(
-            pwndbg.aglib.arch.current, generic_assistant
+            pwndbg.aglib.arch.name, generic_assistant
         )
 
         # Don't disable emulation yet, as we can use it to read the syscall register

@@ -63,7 +63,7 @@ def all_versions():
 
 
 def get_target_arch():
-    arch_info = pwndbg.aglib.arch.current
+    arch_info = pwndbg.aglib.arch.name
     target = f"Target Arch: {arch_info}\n"
 
     if pwndbg.dbg.is_gdblib_available():

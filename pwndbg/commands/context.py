@@ -908,10 +908,10 @@ def context_disasm(target=sys.stdout, with_banner=True, width=None):
     thumb_mode_str = get_thumb_mode_string()
     if thumb_mode_str is not None:
         info = " / {} / {} mode / set emulate {}".format(
-            pwndbg.aglib.arch.current, thumb_mode_str, pwndbg.config.emulate
+            pwndbg.aglib.arch.name, thumb_mode_str, pwndbg.config.emulate
         )
     else:
-        info = " / {} / set emulate {}".format(pwndbg.aglib.arch.current, pwndbg.config.emulate)
+        info = " / {} / set emulate {}".format(pwndbg.aglib.arch.name, pwndbg.config.emulate)
     banner = [pwndbg.ui.banner("disasm", target=target, width=width, extra=info)]
 
     # If we didn't disassemble backward, try to make sure

@@ -135,7 +135,7 @@ def kernel_vmmap_via_page_tables() -> Tuple[pwndbg.lib.memory.Page, ...]:
         )
         return ()
 
-    arch = pwndbg.aglib.arch.current
+    arch = pwndbg.aglib.arch.name
     if arch == "aarch64":
         arch_backend = PT_Aarch64_Backend(machine_backend)
     elif arch == "i386":
@@ -292,7 +292,7 @@ def kernel_vmmap() -> Tuple[pwndbg.lib.memory.Page, ...]:
     if not pwndbg.aglib.qemu.is_qemu_kernel():
         return ()
 
-    if pwndbg.aglib.arch.current not in (
+    if pwndbg.aglib.arch.name not in (
         "i386",
         "x86-64",
         "aarch64",
