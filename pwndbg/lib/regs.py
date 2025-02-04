@@ -13,6 +13,8 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
+from pwndbg.lib.arch import PWNDBG_SUPPORTED_ARCHITECTURES_TYPE
+
 BitFlags = OrderedDict[str, Union[int, Tuple[int, int]]]
 
 
@@ -186,14 +188,6 @@ aarch64_scr_flags = BitFlags(
 )
 
 arm = RegisterSet(
-    retaddr=("lr",),
-    flags={"cpsr": arm_cpsr_flags},
-    gpr=("r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12"),
-    args=("r0", "r1", "r2", "r3"),
-    retval="r0",
-)
-
-iwmmxt = RegisterSet(
     retaddr=("lr",),
     flags={"cpsr": arm_cpsr_flags},
     gpr=("r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12"),
@@ -670,7 +664,7 @@ loongarch64 = RegisterSet(
     misc=("tp", "r21"),
 )
 
-reg_sets = {
+reg_sets: Dict[PWNDBG_SUPPORTED_ARCHITECTURES_TYPE, RegisterSet] = {
     "i386": i386,
     "i8086": i386,
     "x86-64": amd64,
@@ -679,7 +673,6 @@ reg_sets = {
     "mips": mips,
     "sparc": sparc,
     "arm": arm,
-    "iwmmxt": iwmmxt,
     "armcm": armcm,
     "aarch64": aarch64,
     "powerpc": powerpc,

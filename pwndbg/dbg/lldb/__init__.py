@@ -29,6 +29,7 @@ import pwndbg.color.message as M
 import pwndbg.lib.memory
 from pwndbg.aglib import load_aglib
 from pwndbg.dbg import selection
+from pwndbg.lib.arch import PWNDBG_SUPPORTED_ARCHITECTURES_TYPE
 from pwndbg.lib.regs import reg_sets
 
 T = TypeVar("T")
@@ -54,9 +55,14 @@ def rename_register(name: str, proc: LLDBProcess) -> str:
 
 
 class LLDBArch(pwndbg.dbg_mod.Arch):
-    def __init__(self, name: str, ptrsize: int, endian: Literal["little", "big"]):
+    def __init__(
+        self,
+        name: PWNDBG_SUPPORTED_ARCHITECTURES_TYPE,
+        ptrsize: int,
+        endian: Literal["little", "big"],
+    ):
         self._endian = endian
-        self._name = name
+        self._name: PWNDBG_SUPPORTED_ARCHITECTURES_TYPE = name
         self._ptrsize = ptrsize
 
     @override
@@ -66,7 +72,7 @@ class LLDBArch(pwndbg.dbg_mod.Arch):
 
     @override
     @property
-    def name(self) -> str:
+    def name(self) -> PWNDBG_SUPPORTED_ARCHITECTURES_TYPE:
         return self._name
 
     @override

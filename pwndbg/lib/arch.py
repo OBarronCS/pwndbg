@@ -48,11 +48,21 @@ FMT_BIG_ENDIAN = {1: "B", 2: ">H", 4: ">I", 8: ">Q"}
 
 
 class Arch:
-    def __init__(self, arch_name: str, ptrsize: int, endian: Literal["little", "big"]) -> None:
+    def __init__(
+        self,
+        arch_name: PWNDBG_SUPPORTED_ARCHITECTURES_TYPE,
+        ptrsize: int,
+        endian: Literal["little", "big"],
+    ) -> None:
         self.update(arch_name, ptrsize, endian)
         self.native_endian = str(sys.byteorder)
 
-    def update(self, arch_name: str, ptrsize: int, endian: Literal["little", "big"]) -> None:
+    def update(
+        self,
+        arch_name: PWNDBG_SUPPORTED_ARCHITECTURES_TYPE,
+        ptrsize: int,
+        endian: Literal["little", "big"],
+    ) -> None:
         self.name = arch_name
         # TODO: `current` is the old name for the arch name, and it's now an
         # alias for `name`. It's used throughout the codebase, do we want to

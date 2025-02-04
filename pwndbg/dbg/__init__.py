@@ -20,6 +20,7 @@ from typing import TypedDict
 from typing import TypeVar
 
 import pwndbg.lib.memory
+from pwndbg.lib.arch import PWNDBG_SUPPORTED_ARCHITECTURES_TYPE
 
 dbg: Debugger = None
 
@@ -81,7 +82,7 @@ class Arch:
         raise NotImplementedError()
 
     @property
-    def name(self) -> str:
+    def name(self) -> PWNDBG_SUPPORTED_ARCHITECTURES_TYPE:
         """
         Name of the architecture.
         """
