@@ -596,16 +596,15 @@ class GDBProcess(pwndbg.dbg_mod.Process):
         import pwndbg.aglib.file
 
         if pwndbg.aglib.file.is_vfile_qemu_user_bug():
-            try:
-                with open(local_path, "wb") as fp:
+            with open(local_path, "wb") as fp:
+                try:
                     for data in pwndbg.aglib.file.vfile_readfile(remote_path):
                         fp.write(data)
-                return
-            except OSError as e:
-                raise pwndbg.dbg_mod.Error(
-                    "Could not download remote file %r:\nError: %s" % (remote_path, str(e))
-                )
-
+                    return
+                except OSError as e:
+                    raise pwndbg.dbg_mod.Error(
+                        "Could not download remote file %r:\nError: %s" % (remote_path, str(e))
+                    )
         try:
             error = gdb.execute(f'remote get "{remote_path}" "{local_path}"', to_string=True)
         except gdb.error as e:
