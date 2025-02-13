@@ -105,10 +105,14 @@ class Process:
 
     @property
     @pwndbg.lib.cache.cache_until("stop")
-    def selinux(self):
+    def selinux(self) -> str:
         path = "/proc/%i/task/%i/attr/current" % (self.pid, self.tid)
-        raw = pwndbg.aglib.file.get(path)
-        return raw.decode().rstrip("\x00").strip()
+        try:
+            raw = pwndbg.aglib.file.get(path)
+            return raw.decode().rstrip("\x00").strip()
+        except OSError:
+            # This file sometimes cannot be read. This indicates SELinux is not enabled
+            return ""
 
     @property
     @pwndbg.lib.cache.cache_until("stop")
@@ -262,7 +266,8 @@ def procinfo() -> None:
     print("%-10s %s" % ("pid", proc.pid))
     print("%-10s %s" % ("tid", proc.tid))
 
-    if proc.selinux != "unconfined":
+    # Indicate if the process is restricted by SELinux policies
+    if proc.selinux != "" and proc.selinux != "unconfined":
         print("%-10s %s" % ("selinux", proc.selinux))
 
     print("%-10s %s" % ("ppid", proc.ppid))

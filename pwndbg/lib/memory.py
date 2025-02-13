@@ -59,6 +59,12 @@ class Page:
     flags = 0  #: Flags set by the ELF file, see PF_X, PF_R, PF_W
     offset = 0  #: Offset into the original ELF file that the data is loaded from
     objfile = ""  #: Path to the ELF on disk
+    """
+    Possible non-empty values of `objfile`:
+    - Contains square brackets "[]" if it's not a memory mapped file.
+        Examples: [stack], [vsyscall], [heap], [vdso]
+    - A path to a file, such as `/usr/lib/libc.so.6`
+    """
 
     def __init__(self, start: int, size: int, flags: int, offset: int, objfile: str = "") -> None:
         self.vaddr = start
