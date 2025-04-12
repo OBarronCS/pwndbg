@@ -254,13 +254,13 @@ class DisassemblyAssistant:
 
         # Disable emulation after CALL instructions. We do it after enhancement, as we can use emulation
         # to determine the call's target address.
-        if jump_emu and instruction.call_like:
-            jump_emu.valid = False
-            jump_emu = None
-            emu = None
+        # if jump_emu and instruction.call_like:
+        #     jump_emu.valid = False
+        #     jump_emu = None
+        #     emu = None
 
-            if DEBUG_ENHANCEMENT:
-                print("Turned off emulation for call")
+        #     if DEBUG_ENHANCEMENT:
+        #         print("Turned off emulation for call")
 
         if DEBUG_ENHANCEMENT:
             print(enhancer.dump(instruction))
@@ -656,7 +656,8 @@ class DisassemblyAssistant:
         # There are cases where the Unicorn emulator is incorrect - for example, delay slots in MIPS causing jumps to not resolve correctly
         # due to the way we single-step the emulator. We want our own manual checks to override the emulator
 
-        if not instruction.call_like and (
+        # if not instruction.call_like and (
+        if True and (
             instruction.condition == InstructionCondition.TRUE or instruction.is_unconditional_jump
         ):
             # Don't allow call instructions - we want the actual "nexti" address
@@ -670,7 +671,8 @@ class DisassemblyAssistant:
             # Use emulator to determine the next address:
             # 1. Only use it to determine non-call's (`nexti` should step over calls)
             # 2. Make sure we haven't manually set .condition to False (which should override the emulators prediction)
-            if not instruction.call_like and instruction.condition != InstructionCondition.FALSE:
+            if True and instruction.condition != InstructionCondition.FALSE:
+            # if not instruction.call_like and instruction.condition != InstructionCondition.FALSE:
                 next_addr = jump_emu.pc
 
         # Handle edge case - if the target happens to be the next address in memory and it's a jump, we need this variable
