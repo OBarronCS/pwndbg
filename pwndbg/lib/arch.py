@@ -42,6 +42,7 @@ PWNDBG_SUPPORTED_ARCHITECTURES_TYPE = Literal[
     "powerpc",
     "loongarch64",
     "s390x",
+    "wasm"
 ]
 
 PWNDBG_SUPPORTED_ARCHITECTURES: list[PWNDBG_SUPPORTED_ARCHITECTURES_TYPE] = list(

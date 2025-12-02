@@ -7,7 +7,7 @@ from typing import Literal
 from typing import Tuple
 
 import pwnlib
-from capstone import CS_ARCH_AARCH64
+from capstone import CS_ARCH_AARCH64, CS_ARCH_WASM
 from capstone import CS_ARCH_ARM
 from capstone import CS_ARCH_LOONGARCH
 from capstone import CS_ARCH_MIPS
@@ -383,6 +383,18 @@ class S390xArch(PwndbgArchitecture):
     def get_capstone_constants(self, address: int) -> Tuple[int, int]:
         return (CS_ARCH_SYSTEMZ, 0)
 
+class WasmArch(PwndbgArchitecture):
+    max_instruction_size = 10
+
+    def __init__(self) -> None:
+        super().__init__("wasm")
+
+    @override
+    def get_capstone_constants(self, address: int) -> Tuple[int, int]:
+        return (CS_ARCH_WASM, 0)
+    
+
+
 
 # Register the architecture classes
 all_arches = [
@@ -399,6 +411,7 @@ all_arches = [
     MipsArch(),
     Loongarch64Arch(),
     S390xArch(),
+    WasmArch()
 ]
 
 for arch in all_arches:

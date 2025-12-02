@@ -355,3 +355,74 @@ def stackf(count, offset) -> None:
 
 telescope.last_address = 0
 telescope.offset = 0
+
+
+
+import struct
+
+
+parser = argparse.ArgumentParser(
+    description="Read WASM stack."
+)
+parser.add_argument("count", nargs="?", default=None, type=int, help="number of element to dump")
+parser.add_argument(
+    "offset",
+    nargs="?",
+    default=0,
+    type=int,
+    help="Element offset from $sp (support negative offset)",
+)
+
+
+
+def wasm_stack_helper(count, offset) -> list[str]:
+    ptrsize = 8
+
+    ADDRESS_START = 0x10000000
+
+    if count is None:
+        count = pwndbg.aglib.regs.sp
+
+    result = []
+
+    for i in range(count):
+        real_offset = i*8 + offset*8
+        val = pwndbg.aglib.memory.read(ADDRESS_START + real_offset, 8)
+        val = struct.unpack("<Q", val)[0]
+        result.append(f"{real_offset} —▸ " + hex(val))
+
+    return result
+
+@pwndbg.commands.Command(parser, category=CommandCategory.STACK)
+@pwndbg.commands.OnlyWhenRunning
+def wasm_stack(count, offset) -> None:
+    for x in wasm_stack_helper(count,offset):
+        print(x)
+
+
+def wasm_global_helper(count) -> list[str]:
+    ptrsize = 8
+
+    ADDRESS_START = 0x20000000
+
+    result = []
+
+    for i in range(count):
+        real_offset = i*8
+        val = pwndbg.aglib.memory.read(ADDRESS_START + real_offset, 8)
+        val = struct.unpack("<Q", val)[0]
+        result.append(f"{real_offset} —▸ " + hex(val))
+
+    return result
+
+parser = argparse.ArgumentParser(
+    description="Read WASM globals."
+)
+parser.add_argument("count", type=int, help="number of element to dump")
+
+
+@pwndbg.commands.Command(parser, category=CommandCategory.STACK)
+@pwndbg.commands.OnlyWhenRunning
+def wasm_global(count) -> None:
+    for x in wasm_global_helper(count):
+        print(x)

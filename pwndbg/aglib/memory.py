@@ -441,6 +441,7 @@ def is_pagefault_supported() -> bool:
     See more discussion here: https://github.com/pwndbg/pwndbg/pull/385
     """
 
+    return False
     # TODO: use a better detection method
     return pwndbg.dbg.selected_inferior().is_linux()
 

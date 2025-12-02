@@ -15,6 +15,11 @@ from capstone import CS_AC
 from capstone import CS_GRP
 from capstone import CS_OP
 from capstone import *  # noqa: F403
+from capstone.wasm import WASM_INS_BR
+from capstone.wasm import WASM_INS_BR_TABLE
+from capstone.wasm import WASM_INS_RETURN
+from capstone.wasm import WASM_INS_CALL
+from capstone.wasm import WASM_INS_CALL_INDIRECT
 from capstone.aarch64 import AARCH64_INS_BL
 from capstone.aarch64 import AARCH64_INS_BLR
 from capstone.aarch64 import AARCH64_INS_BR
@@ -111,6 +116,13 @@ UNCONDITIONAL_JUMP_INSTRUCTIONS: Dict[int, Set[int]] = {
         LOONGARCH_INS_ALIAS_JR,
         LOONGARCH_INS_CALL36,
     },
+    CS_ARCH_WASM: {
+        WASM_INS_BR,
+        WASM_INS_BR_TABLE,
+        WASM_INS_RETURN,
+        WASM_INS_CALL,
+        WASM_INS_CALL_INDIRECT
+    }
 }
 
 # See: https://github.com/capstone-engine/capstone/issues/2448

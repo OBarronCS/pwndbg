@@ -25,6 +25,7 @@ import pwndbg.aglib.disasm.disassembly
 import pwndbg.aglib.disasm.loongarch64
 import pwndbg.aglib.disasm.mips
 import pwndbg.aglib.disasm.ppc
+import pwndbg.aglib.disasm.wasm
 import pwndbg.aglib.disasm.riscv
 import pwndbg.aglib.disasm.x86
 import pwndbg.aglib.memory
@@ -119,7 +120,7 @@ def get_previous_instruction(
         prev_address = linear_backward_cache[address]
         result = (
             one(prev_address, from_cache=use_cache, put_backward_cache=False)
-            if prev_address
+            if prev_address is not None
             else None
         )
         if result is None and pwndbg.aglib.arch.constant_instruction_size:
@@ -134,7 +135,7 @@ def get_previous_instruction(
         prev_address = backward_cache[address]
         return (
             one(prev_address, from_cache=use_cache, put_backward_cache=False)
-            if prev_address
+            if prev_address is not None
             else None
         )
 
@@ -557,6 +558,7 @@ ALL_DISASSEMBLY_ASSISTANTS: Dict[
         "loongarch64"
     ),
     "powerpc": lambda: pwndbg.aglib.disasm.ppc.PowerPCDisassemblyAssistant("powerpc"),
+    "wasm": lambda: pwndbg.aglib.disasm.wasm.WasmDisassemblyAssistant("wasm"),
 }
 
 

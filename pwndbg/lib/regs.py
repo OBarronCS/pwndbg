@@ -1224,6 +1224,10 @@ s390x = RegisterSet(
     retval="r2",
 )
 
+wasm = RegisterSet(
+    pc=Reg("pc")
+)
+
 reg_sets: Dict[PWNDBG_SUPPORTED_ARCHITECTURES_TYPE, RegisterSet] = {
     "i386": i386,
     "i8086": i386,
@@ -1238,4 +1242,5 @@ reg_sets: Dict[PWNDBG_SUPPORTED_ARCHITECTURES_TYPE, RegisterSet] = {
     "powerpc": powerpc,
     "loongarch64": loongarch64,
     "s390x": s390x,
+    "wasm": wasm
 }

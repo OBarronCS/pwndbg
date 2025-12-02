@@ -770,6 +770,8 @@ class GDBProcess(pwndbg.dbg_mod.Process):
                     match = "powerpc"
                 elif match == "s390:64-bit":
                     match = "s390x"
+                elif match == "i386":
+                    match = "wasm"
                 return ArchDefinition(
                     name=match,  # type: ignore[arg-type]
                     ptrsize=ptrsize,

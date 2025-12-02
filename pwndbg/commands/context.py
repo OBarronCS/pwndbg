@@ -1239,12 +1239,33 @@ stack_lines = pwndbg.config.add_param(
 @serve_context_history
 def context_stack(target=sys.stdout, with_banner=True, width=None):
     result = [pwndbg.ui.banner("stack", target=target, width=width)] if with_banner else []
-    telescope = pwndbg.commands.telescope.telescope(
-        pwndbg.aglib.regs.sp, to_string=True, count=stack_lines
-    )
-    if telescope:
-        result.extend(telescope)
+    # telescope = pwndbg.commands.telescope.telescope(
+    #     pwndbg.aglib.regs.sp, to_string=True, count=stack_lines
+    # )
+    # if telescope:
+    #     result.extend(telescope)
+    result.extend(pwndbg.commands.telescope.wasm_stack_helper(None,0))
     return result
+
+
+global_count = pwndbg.config.add_param(
+    "global-count",
+    5,
+    "Number of global wasm variables",
+)
+
+
+@serve_context_history
+def context_globals(target=sys.stdout, with_banner=True, width=None):
+    result = [pwndbg.ui.banner("globals", target=target, width=width)] if with_banner else []
+    # telescope = pwndbg.commands.telescope.telescope(
+    #     pwndbg.aglib.regs.sp, to_string=True, count=stack_lines
+    # )
+    # if telescope:
+    #     result.extend(telescope)
+    result.extend(pwndbg.commands.telescope.wasm_global_helper(int(global_count)))
+    return result
+
 
 
 backtrace_lines = pwndbg.config.add_param(
@@ -1479,7 +1500,7 @@ context_sections = {
     "r": context_regs,
     "d": context_disasm,
     "s": context_stack,
-    "b": context_backtrace,
+    "b": context_globals,
     "c": context_code,
 }
 
