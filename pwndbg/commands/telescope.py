@@ -389,7 +389,7 @@ def wasm_stack_helper(count, offset) -> list[str]:
         real_offset = i*8 + offset*8
         val = pwndbg.aglib.memory.read(ADDRESS_START + real_offset, 8)
         val = struct.unpack("<Q", val)[0]
-        result.append(f"{real_offset} —▸ " + hex(val))
+        result.append(f"{real_offset // 8} —▸ " + hex(val))
 
     return result
 
