@@ -360,7 +360,6 @@ telescope.offset = 0
 
 import struct
 
-
 parser = argparse.ArgumentParser(
     description="Read WASM stack."
 )

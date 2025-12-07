@@ -7,7 +7,7 @@ from typing import Literal
 from typing import Tuple
 
 import pwnlib
-from capstone import CS_ARCH_AARCH64, CS_ARCH_WASM
+from capstone import CS_ARCH_AARCH64
 from capstone import CS_ARCH_ARM
 from capstone import CS_ARCH_LOONGARCH
 from capstone import CS_ARCH_MIPS
@@ -15,6 +15,7 @@ from capstone import CS_ARCH_PPC
 from capstone import CS_ARCH_RISCV
 from capstone import CS_ARCH_SPARC
 from capstone import CS_ARCH_SYSTEMZ
+from capstone import CS_ARCH_WASM
 from capstone import CS_ARCH_X86
 from capstone import CS_MODE_16
 from capstone import CS_MODE_32

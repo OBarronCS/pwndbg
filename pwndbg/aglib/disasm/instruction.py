@@ -15,11 +15,6 @@ from capstone import CS_AC
 from capstone import CS_GRP
 from capstone import CS_OP
 from capstone import *  # noqa: F403
-from capstone.wasm import WASM_INS_BR
-from capstone.wasm import WASM_INS_BR_TABLE
-from capstone.wasm import WASM_INS_RETURN
-from capstone.wasm import WASM_INS_CALL
-from capstone.wasm import WASM_INS_CALL_INDIRECT
 from capstone.aarch64 import AARCH64_INS_BL
 from capstone.aarch64 import AARCH64_INS_BLR
 from capstone.aarch64 import AARCH64_INS_BR
@@ -61,6 +56,11 @@ from capstone.systemz import SYSTEMZ_INS_BRAS
 from capstone.systemz import SYSTEMZ_INS_BRASL
 from capstone.systemz import SYSTEMZ_INS_J
 from capstone.systemz import SYSTEMZ_INS_JL
+from capstone.wasm import WASM_INS_BR
+from capstone.wasm import WASM_INS_BR_TABLE
+from capstone.wasm import WASM_INS_CALL
+from capstone.wasm import WASM_INS_CALL_INDIRECT
+from capstone.wasm import WASM_INS_RETURN
 from capstone.x86 import X86_INS_CALL
 from capstone.x86 import X86_INS_JMP
 from capstone.x86 import X86_INS_RET

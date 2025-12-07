@@ -25,8 +25,8 @@ import pwndbg.aglib.disasm.disassembly
 import pwndbg.aglib.disasm.loongarch64
 import pwndbg.aglib.disasm.mips
 import pwndbg.aglib.disasm.ppc
-import pwndbg.aglib.disasm.wasm
 import pwndbg.aglib.disasm.riscv
+import pwndbg.aglib.disasm.wasm
 import pwndbg.aglib.disasm.x86
 import pwndbg.aglib.memory
 import pwndbg.emu.emulator
