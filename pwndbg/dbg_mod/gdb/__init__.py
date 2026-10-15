@@ -1084,7 +1084,6 @@ class GDBProcess(pwndbg.dbg_mod.Process):
         import pwndbg.aglib.typeinfo
 
         ptrsize = pwndbg.aglib.typeinfo.ptrsize
-        not_exactly_arch = False
 
         endian: Literal["little", "big"] = None
         if "little" in gdb.execute("show endian", to_string=True).lower():
@@ -1096,7 +1095,6 @@ class GDBProcess(pwndbg.dbg_mod.Process):
             arch = gdb.newest_frame().architecture().name()
         else:
             arch = gdb.execute("show architecture", to_string=True).strip()
-            not_exactly_arch = True
 
         arch = arch.lower()
 
@@ -1147,9 +1145,6 @@ class GDBProcess(pwndbg.dbg_mod.Process):
                     platform=Platform.LINUX,
                     attributes=arch_attributes,
                 )
-
-        if not_exactly_arch:
-            raise RuntimeError(f"Could not deduce architecture from: {arch}")
 
         return ArchDefinition(
             name=arch,  # type: ignore[arg-type]
